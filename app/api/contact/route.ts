@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,19 +14,50 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log the contact form submission (in production, you'd send this to a database or email service)
-    console.log('Contact form submission:', {
+    // Try to send email if credentials are configured
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        // Create transporter using Gmail
+        const transporter = nodemailer.createTransporter({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        })
+
+        // Email content
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: 'builder@noise2signal.co.uk',
+          subject: `New Contact Form Submission from ${name}`,
+          html: `
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong> ${message || 'No message provided'}</p>
+            <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+          `
+        }
+
+        // Send email
+        await transporter.sendMail(mailOptions)
+        console.log('Email sent successfully')
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError)
+        // Continue with logging even if email fails
+      }
+    } else {
+      console.log('Email credentials not configured - skipping email send')
+    }
+
+    // Log the contact form submission
+    console.log('Contact form submission sent via email:', {
       name,
       email,
       message: message || 'No message provided',
       timestamp: new Date().toISOString()
     })
-
-    // In a real application, you would:
-    // 1. Send an email notification to your team
-    // 2. Store the contact in a database
-    // 3. Send a confirmation email to the user
-    // 4. Integrate with a CRM system
 
     return NextResponse.json(
       { success: true, message: 'Contact form submitted successfully' },

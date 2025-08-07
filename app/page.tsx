@@ -393,7 +393,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="max-w-2xl mx-auto">
             {/* Contact Form */}
             <Card className="border-2 relative overflow-hidden group" style={{ borderColor: '#1C5C35' }}>
               <div className="absolute inset-0 bg-gradient-to-br from-[#1C5C35]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -475,29 +475,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            {/* Alternative Contact */}
-            <div className="flex flex-col justify-center">
-              <Card className="border-2 bg-white relative overflow-hidden group" style={{ borderColor: '#1C5C35' }}>
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1C5C35]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <CardContent className="p-8 text-center relative z-10">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 relative group/mail" style={{ backgroundColor: '#1C5C35' }}>
-                    <Mail className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" style={{ color: '#F9F9F7' }} />
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#1C5C35] to-[#1C5C35]/70 opacity-0 group/mail-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-4 tracking-wide" style={{ color: '#0A1D36' }}>
-                    OR JUST EMAIL US DIRECTLY
-                  </h3>
-                  <a 
-                    href="mailto:builder@noise2signal.co.uk"
-                    className="text-lg font-semibold hover:underline transition-all duration-300 relative group/link"
-                    style={{ color: '#1C5C35' }}
-                  >
-                    builder@noise2signal.co.uk
-                    <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1C5C35] group-hover/link:w-full transition-all duration-300" />
-                  </a>
-                </CardContent>
-              </Card>
-            </div>
+
           </div>
         </div>
       </section>

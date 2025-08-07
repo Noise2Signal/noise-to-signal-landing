@@ -45,33 +45,41 @@ export default function LandingPage() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Create email content
-    const subject = `Contact from ${formData.name} - Noise 2 Signal`
-    const body = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    
-    // Open default email client with pre-filled content
-    const mailtoLink = `mailto:builder@noise2signal.co.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    
-    // Try to open email client
-    window.open(mailtoLink, '_blank')
-    
-    // Show success message
-    setIsSubmitted(true)
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      message: ''
-    })
-    
-    // Hide success message after 5 seconds
-    setTimeout(() => {
-      setIsSubmitted(false)
-    }, 5000)
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        // Show success message
+        setIsSubmitted(true)
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          message: ''
+        })
+        
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false)
+        }, 5000)
+      } else {
+        console.error('Failed to submit form')
+        alert('Failed to submit form. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      alert('Failed to submit form. Please try again.')
+    }
   }
 
   const scrollToSection = (sectionId: string) => {
@@ -432,10 +440,9 @@ export default function LandingPage() {
                     <div>
                       <Textarea
                         name="message"
-                        placeholder="Your Message"
+                        placeholder="Your Message (Optional)"
                         value={formData.message}
                         onChange={handleInputChange}
-                        required
                         rows={5}
                         className="text-base border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
                         style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
@@ -446,7 +453,7 @@ export default function LandingPage() {
                       className="w-full text-sm font-medium tracking-wide uppercase py-6 transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group/submit"
                       style={{ backgroundColor: '#1C5C35', color: '#F9F9F7' }}
                     >
-                      <span className="relative z-10">SEND MESSAGE</span>
+                      <span className="relative z-10">SUBMIT</span>
                       <ArrowRight className="ml-2 h-5 w-5 relative z-10 group-hover/submit:translate-x-1 transition-transform duration-300" />
                       <div className="absolute inset-0 bg-gradient-to-r from-[#1C5C35] to-[#1C5C35]/80 opacity-0 group-hover/submit:opacity-100 transition-opacity duration-300" />
                     </Button>
@@ -457,10 +464,10 @@ export default function LandingPage() {
                       <Mail className="h-8 w-8" style={{ color: '#F9F9F7' }} />
                     </div>
                     <h3 className="text-xl font-bold mb-2 tracking-wide" style={{ color: '#0A1D36' }}>
-                      MESSAGE SENT!
+                      THANK YOU!
                     </h3>
                     <p className="text-base mb-4" style={{ color: '#1A1A1A' }}>
-                      Your email client should open with a pre-filled message. If it doesn't, please email us directly at builder@noise2signal.co.uk
+                      Your contact information has been submitted successfully. We'll get back to you soon!
                     </p>
                     <Button 
                       onClick={() => setIsSubmitted(false)}

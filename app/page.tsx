@@ -15,6 +15,7 @@ export default function LandingPage() {
     email: '',
     message: ''
   })
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [particlePositions, setParticlePositions] = useState<{left: string, top: string}[]>([]);
@@ -46,7 +47,31 @@ export default function LandingPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
+    
+    // Create email content
+    const subject = `Contact from ${formData.name} - Noise 2 Signal`
+    const body = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    
+    // Open default email client with pre-filled content
+    const mailtoLink = `mailto:builder@noise2signal.co.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    
+    // Try to open email client
+    window.open(mailtoLink, '_blank')
+    
+    // Show success message
+    setIsSubmitted(true)
+    
+    // Reset form
+    setFormData({
+      name: '',
+      email: '',
+      message: ''
+    })
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      setIsSubmitted(false)
+    }, 5000)
   }
 
   const scrollToSection = (sectionId: string) => {
@@ -330,8 +355,8 @@ export default function LandingPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="relative z-10">
-                  <Link href="/tools/under-construction" passHref legacyBehavior>
-                    <Button as="a" className="w-full text-sm font-medium tracking-wide uppercase transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group/btn" style={{ backgroundColor: '#1C5C35', color: '#F9F9F7' }}>
+                  <Link href="/tools/under-construction">
+                    <Button className="w-full text-sm font-medium tracking-wide uppercase transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group/btn" style={{ backgroundColor: '#1C5C35', color: '#F9F9F7' }}>
                       <span className="relative z-10">{tool.cta}</span>
                       <ExternalLink className="ml-2 h-4 w-4 relative z-10 group-hover/btn:translate-x-1 transition-transform duration-300" />
                       <div className="absolute inset-0 bg-gradient-to-r from-[#1C5C35] via-[#1C5C35]/90 to-[#1C5C35] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
@@ -378,53 +403,75 @@ export default function LandingPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <Input
-                      type="text"
-                      name="name"
-                      placeholder="Your Name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="text-base py-3 border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
-                      style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
-                    />
+                {!isSubmitted ? (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <Input
+                        type="text"
+                        name="name"
+                        placeholder="Your Name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className="text-base py-3 border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
+                        style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
+                      />
+                    </div>
+                    <div>
+                      <Input
+                        type="email"
+                        name="email"
+                        placeholder="Your Email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className="text-base py-3 border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
+                        style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
+                      />
+                    </div>
+                    <div>
+                      <Textarea
+                        name="message"
+                        placeholder="Your Message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        required
+                        rows={5}
+                        className="text-base border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
+                        style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full text-sm font-medium tracking-wide uppercase py-6 transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group/submit"
+                      style={{ backgroundColor: '#1C5C35', color: '#F9F9F7' }}
+                    >
+                      <span className="relative z-10">SEND MESSAGE</span>
+                      <ArrowRight className="ml-2 h-5 w-5 relative z-10 group-hover/submit:translate-x-1 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#1C5C35] to-[#1C5C35]/80 opacity-0 group-hover/submit:opacity-100 transition-opacity duration-300" />
+                    </Button>
+                  </form>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse" style={{ backgroundColor: '#1C5C35' }}>
+                      <Mail className="h-8 w-8" style={{ color: '#F9F9F7' }} />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 tracking-wide" style={{ color: '#0A1D36' }}>
+                      MESSAGE SENT!
+                    </h3>
+                    <p className="text-base mb-4" style={{ color: '#1A1A1A' }}>
+                      Your email client should open with a pre-filled message. If it doesn't, please email us directly at builder@noise2signal.co.uk
+                    </p>
+                    <Button 
+                      onClick={() => setIsSubmitted(false)}
+                      variant="outline"
+                      className="text-sm font-medium tracking-wide uppercase transition-all duration-300"
+                      style={{ borderColor: '#1C5C35', color: '#1C5C35' }}
+                    >
+                      SEND ANOTHER MESSAGE
+                    </Button>
                   </div>
-                  <div>
-                    <Input
-                      type="email"
-                      name="email"
-                      placeholder="Your Email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="text-base py-3 border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
-                      style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
-                    />
-                  </div>
-                  <div>
-                    <Textarea
-                      name="message"
-                      placeholder="Your Message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      rows={5}
-                      className="text-base border-2 transition-all duration-300 focus:shadow-lg focus:shadow-[#1C5C35]/20"
-                      style={{ borderColor: '#1C5C35', color: '#0A1D36' }}
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full text-sm font-medium tracking-wide uppercase py-6 transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group/submit"
-                    style={{ backgroundColor: '#1C5C35', color: '#F9F9F7' }}
-                  >
-                    <span className="relative z-10">SEND MESSAGE</span>
-                    <ArrowRight className="ml-2 h-5 w-5 relative z-10 group-hover/submit:translate-x-1 transition-transform duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#1C5C35] to-[#1C5C35]/80 opacity-0 group-hover/submit:opacity-100 transition-opacity duration-300" />
-                  </Button>
-                </form>
+                )}
               </CardContent>
             </Card>
 
@@ -481,7 +528,7 @@ export default function LandingPage() {
             © 2025 Noise 2 Signal. Clarity in Chaos.
           </p>
         </div>
-      </footer>
+              </footer>
 
       <style jsx>{`
         @keyframes gridMove {
